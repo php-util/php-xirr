@@ -9,19 +9,20 @@ namespace phpXirr;
 
 class PhpXirr
 {
-    private static $Max_Rate = 99999.9; //最大收益率
-    private static $Min_Rate = -0.99999999; //最小收益率（赔光了）
-    private static $Critical = 0.00000001; //精确值
+    private $Max_Rate = 99999.9; //最大收益率
+    private $Min_Rate = -0.99999999; //最小收益率（赔光了,Excel如果除第一条外是0则会产出一个#NUM!错误而不是-1）
+    private $Critical = 0.00000001; //精确值
 
-    public static $Error_Null_List = -501; //代表传进来的list为空
-    public static $Error_Less_Cash = -502; //少于一条现金流
-    public static $Error_Date = -503; //传进来的现金流的第一条现金流记录的时间不是最早的时间
-    public static $Error_First_Payment = -504; //第一条现金流的payment的值不为负
+    public $Error_Null_List = -501; //代表传进来的list为空
+    public $Error_Less_Cash = -502; //少于一条现金流
+    public $Error_Date = -503; //传进来的现金流的第一条现金流记录的时间不是最早的时间
+    public $Error_First_Payment = -504; //第一条现金流的payment的值不为负
+    public $calculateCount = 50; //一般而言，50次迭代足够了
 
     /**
      * 第一条现金流具体某个时间点的差值天数，这个天数应该是所有现金流里面的差值天数最大的.
      */
-    private static $startDay = 0;
+    private $startDay = 0;
     private $listUpbaa;
 
     public function getDaysFrom1970($date)
@@ -83,10 +84,9 @@ class PhpXirr
         $XIRR = 0;
         $tempMax = 0;
         $tempMin = 0;
-        $calculateCount = 50;
-        //var_dump(self::$Max_Rate);
+        $calculateCount = $this->calculateCount;
         if ($isEarn) {
-            $tempMax = self::$Max_Rate;
+            $tempMax = $this->Max_Rate;
             $tempMin = 0;
             while ($calculateCount > 0) {
                 $XIRR = ($tempMin + $tempMax) / 2;
@@ -97,14 +97,14 @@ class PhpXirr
                     $tempMax = $XIRR;
                 }
                 //echo "[ $tempMax ,$XIRR, $tempMin  ]\n";
-                if (abs($XIRR) < self::$Critical) {
+                if (abs($XIRR) < $this->Critical) {
                     break;
                 }
                 --$calculateCount;
             }
         } else {
             $tempMax = 0;
-            $tempMin = self::$Min_Rate;
+            $tempMin = $this->Min_Rate;
             while ($calculateCount > 0) {
                 $XIRR = ($tempMin + $tempMax) / 2;
                 $xnvp = $this->getXNPVByRate($XIRR);
@@ -115,7 +115,7 @@ class PhpXirr
                 }
 
                 //echo "[ $tempMax ,$XIRR, $tempMin  ]\n";
-                if (abs($XIRR) < self::$Critical) {
+                if (abs($XIRR) < $this->Critical) {
                     break;
                 }
                 --$calculateCount;
