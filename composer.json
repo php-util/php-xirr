@@ -1,0 +1,11 @@
+{
+    "name": "php-util/php-xirr",
+    "description": "Calculate XIRR in Excel with PHP",
+    "authors": [
+        {
+            "name": "Guo Feng",
+            "email": "amikov@gmail.com"
+        }
+    ],
+    "require": {}
+}
